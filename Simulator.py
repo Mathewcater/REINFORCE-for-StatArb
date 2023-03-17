@@ -3,17 +3,13 @@ import torch
 from tqdm import tqdm
 np.seterr(divide='ignore', invalid='ignore')
 import matplotlib.pyplot as plt
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "Palatino"
-})
 from matplotlib.lines import Line2D
 from scipy.stats import norm
 
 class Sim():
     """OU process sample path simulator. Simulates: dX_t = (kappa)(mu - X_t)dt + (sigma)dW_t
     """
-    def __init__(self, x0 = 1, mu = 1, kappa = 3, sigma = np.sqrt(6)/10):
+    def __init__(self, x0=1, mu=1, kappa=2, sigma=np.sqrt(2)/10):
     
         self.x0 = x0
         self.kappa = kappa
@@ -46,9 +42,13 @@ class Sim():
         
 if __name__ == "__main__":
     
+    # Produces plots of price paths, each using Euler scheme 
+    # simulating the process out to 1 second.
+    
     sim = Sim(kappa=4.0, sigma=0.9)
     num_steps = 5
     num_paths = 5
+    
     pths = sim.paths(num_paths, num_steps, 1/num_steps, det=True, deep=False)
     for i in tqdm(range(num_paths)): 
         alpha = 0.05

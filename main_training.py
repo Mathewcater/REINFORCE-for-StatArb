@@ -23,11 +23,6 @@ T.manual_seed(543)
 # Anamoly Detection 
 T.autograd.set_detect_anomaly(True)
 
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "Palatino"
-})
-        
 # ============ POLICY NETWORK ================== #
 
 class PolicyANN(nn.Module):
@@ -52,7 +47,7 @@ class PolicyANN(nn.Module):
     def forward(self, x):
         return nn.Softmax(dim=-1)(self.linear_SiLU_stack(x))
 
-def DEEP_REINFORCE(sim: Sim, alpha=0.001, num_eps=500, num_steps=50, num_epochs=10000, num_states=20, n=10, phi=0.005, psi=0.03): 
+def DEEP_REINFORCE(sim: Sim, alpha=0.001, num_eps=500, num_steps=50, num_epochs=10000, num_states=20, n=10, phi=0.005, psi=0.5): 
     """Executes training with mini-batch (as opposed to SGD) and employs a fully-connected multi-layered 
     feed forward neural network as policy architecture. Also enforces liquidation at final time step.
 

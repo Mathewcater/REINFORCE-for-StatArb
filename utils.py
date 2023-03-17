@@ -5,12 +5,6 @@ import torch as T
 from main_training import *
 from Simulator import *
 
-np.seterr(divide='ignore', invalid='ignore')
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "Palatino"
-})
-
 mblue = (0.098,0.18,0.357)
 mred = (0.902,0.4157,0.0196)
 mgreen = (0.,0.455,0.247)

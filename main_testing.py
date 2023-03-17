@@ -5,32 +5,27 @@ import torch as T
 from main_training import *
 from utils import *
 from scipy import stats
-
-
 np.seterr(divide='ignore', invalid='ignore')
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "Palatino"
-})
 
 if __name__ == '__main__':
     
     # HyperParams: 
-    num_epochs = 5_000            # number of epochs/ parameter updates performed
+    num_epochs = 3_000            # number of epochs/ parameter updates performed
     num_states = 20               # number of prices considered whilst plotting
     num_steps = 5                 # number of periods (including forced liquidation at period 5)
-    num_eps = 1_000               # size of mini-batch in given epoch
+    num_eps = 1_000               # size of mini-batch in given epoch (number of episodes used in MC estimate of gradient)
     n = 10                        # maximal number of units held (q_max)
     phi = 0.005                   # transaction fee
-    psi = 0.5                    # terminal penalty
-    kappa = 2.0                   # mean reversion intensity of data-generating process
-    sigma = 0.2                   # volatility of data-generating process
+    psi = 0.03                    # terminal penalty
+    kappa = 4.0                   # mean reversion intensity of data-generating process
+    sigma = 0.9                   # volatility of data-generating process
     
     acts = T.arange(-n,n+1)
     epochs = T.arange(num_epochs)
-    
+    periods = T.arange(num_steps + 1)     # periods considered in policy plots through time
+
    
-    (fig1, ax1), (fig2, ax2), (fig3, axs) = plt.subplots(1, 1, sharey=True), plt.subplots(1, 1, sharey=True), plt.subplots(1, 6, sharey=True)    
+    (fig1, ax1), (fig2, ax2), (fig3, axs) = plt.subplots(1, 1, sharey=True), plt.subplots(1, 1, sharey=True), plt.subplots(1, len(periods), sharey=True)    
     sim = Sim(kappa=kappa, sigma=sigma)
     avgs, pol, PnL = DEEP_REINFORCE(sim, num_eps=num_eps, num_steps=num_steps, num_epochs=num_epochs, num_states=num_states, n=n, phi=phi, psi=psi)    
 
@@ -52,9 +47,7 @@ if __name__ == '__main__':
 
 
     # === Policy (Heat-Map) Plot ===
-    
-    periods = [0, 1, 2, 3, 4, 5]
-    
+        
     # Create x and y-axis labels 
     bins = (sim.mu - ((2.5)*sim.sigma)/(np.sqrt(2*sim.kappa))) + (((2.5)*2*sim.sigma)/(num_states*np.sqrt(2*sim.kappa))) * np.arange(num_states+1)
     prices = []
@@ -81,8 +74,7 @@ if __name__ == '__main__':
     for k in range(len(periods)):
         
         learned_pol = T.zeros((num_states+2, len(acts)))
-        A = pol[states[:, 0] == periods[k]/num_steps]
-        opt_acts = acts[T.argmax(A, dim=1)]
+        opt_acts = acts[T.argmax(pol[states[:, 0] == periods[k]/num_steps], dim=1)]
         
         for i in range(num_states+2):
             for j in range(len(acts)):
