@@ -42,8 +42,7 @@ class Sim():
         
 if __name__ == "__main__":
     
-    # Produces plots of price paths, each using Euler scheme 
-    # simulating the process out to 1 second.
+    # Produces plots of price paths
     
     sim = Sim(kappa=4.0, sigma=0.9)
     num_steps = 5
